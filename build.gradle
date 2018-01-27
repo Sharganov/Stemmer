@@ -1,0 +1,42 @@
+group 'stemmer'
+
+apply plugin: 'java'
+
+sourceSets.main.java.srcDirs = ['src']
+sourceCompatibility = 1.7
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.opennlp', name: 'opennlp-tools', version: '1.6.0'
+    // https://mvnrepository.com/artifact/org.languagetool/languagetool-core
+    compile group: 'org.languagetool', name: 'language-ru', version: '3.5'
+
+}
+
+jar {
+  manifest {
+    attributes(
+      'Main-Class': 'stemmer.Main',
+    )
+  }
+}
+
+task fatJar(type: Jar) {
+  manifest.from jar.manifest
+  classifier = 'all'
+  from {
+    configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+  } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+  }
+  with jar
+}
+
+artifacts {
+    archives fatJar
+}
+
