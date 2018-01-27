@@ -10,20 +10,6 @@ import java.util.List;
  * */
 public class HistoryClusterBuilder {
 
-    /**
-          Costruisce vari ClusterSet secondo lo storico di merge ricevuto come parametro.
-          E' importante che l'ordine delle parole sia lo stesso con cui è stata calcolato lo storico
-          dei merge, altrimenti si verificano situazioni di inconsistenza.
-
-          Inoltre, si assume che gli elementi della lista seguano l'ordine dei vari merge (i.e. il primo elemento
-          dello storico corrisponde con il primo merge, ecc.)
-
-          @param words lista di termini da clusterizzare.
-          @param history lista contentene lo storico dei merge.
-          @param thresholds lista di distanze alle quali creare ClusterSet.
-          @return lista con i vari ClusterSet creati.
-
-      * */
     public static List<ClusterSet> buildSetsFromHistory(List<String> words, List<MergeHistoryRecord> history, float[] thresholds){
 
         List<ClusterSet> snapshots = new ArrayList<>();
@@ -42,14 +28,9 @@ public class HistoryClusterBuilder {
         Arrays.sort(thresholds);
         int cntThreshold = 0;
 
-        // Ripercorre lo storico dei merge per costruire i vari set
         for (MergeHistoryRecord record : history) {
             if (cntThreshold < thresholds.length && record.getDist() > thresholds[cntThreshold]) {
-                /*
-                *   Il merge che sto per fare è a distanza più grande della soglia minima di snapshot.
-                *   creo quindi uno snapshot del set, facendo una copia profonda dello stato corrente
-                *   e lo aggiungo in lista
-                * */
+
                 ClusterSet newSet = clusterSet.copy();
                 newSet.setThreshold(thresholds[cntThreshold]);
                 snapshots.add(newSet);

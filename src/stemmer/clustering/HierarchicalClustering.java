@@ -40,7 +40,7 @@ public class HierarchicalClustering {
                 int r = pair.getR();
                 int s = pair.getS();
                 if (mergedCluster.contains(r) || mergedCluster.contains(s)){
-                    continue; // Se uno dei due indici è già stato mergiato, salto la coppia
+                    continue;
                 }
                 newClusters.add(Cluster.merge(nextId, manager.getCluster(r), manager.getCluster(s)));
                 historyRecords.add(new MergeHistoryRecord(

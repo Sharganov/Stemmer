@@ -5,20 +5,16 @@ import stemmer.yass.DistanceMeasure;
 import java.util.List;
 import java.util.concurrent.RecursiveTask;
 
-/**
- * -321 `   ``
- * */
+
 public class ClusterDistanceTask extends RecursiveTask<Float> {
 
     private static long SEQUENTIAL_THRESHOLD = 5000;
 
     static float calculateClusterDistance(Cluster c1, Cluster c2, DistanceMeasure d) {
-        // Da notare
         int n1 = c1.getWords().size();
         int n2 = c2.getWords().size();
         long last = n1 * n2;
-        // Cerco di bilanciare la soglia di split in base al numero di core disponibili sulla macchina
-        int cores = Runtime.getRuntime().availableProcessors();
+         int cores = Runtime.getRuntime().availableProcessors();
         SEQUENTIAL_THRESHOLD = (long)Math.ceil((double) last / (4.0*cores));
         return ClusterManager.commonPool.invoke(new ClusterDistanceTask(c1, c2, d, 0, last));
     }
@@ -37,10 +33,7 @@ public class ClusterDistanceTask extends RecursiveTask<Float> {
         this.end = end;
         this.d = d;
         this.n2 = c2.getWords().size();
-        /*
-        * Per suddividere il lavoro tra più thread enumero le coppie
-        * di parole allo stesso modo in cui enumero i cluster in ClusterManager
-        * */
+
     }
 
     private int _i(long k){
@@ -54,8 +47,7 @@ public class ClusterDistanceTask extends RecursiveTask<Float> {
     @Override
     protected Float compute() {
         if(end - start <= SEQUENTIAL_THRESHOLD){
-            // do sequential work
-            float maxDist = 0;
+             float maxDist = 0;
 
             List<String> words1 = c1.getWords();
             List<String> words2 = c2.getWords();
@@ -69,8 +61,7 @@ public class ClusterDistanceTask extends RecursiveTask<Float> {
             }
             return maxDist;
         } else {
-            // Troppo lavoro, lo divido!
-            long mid = start + (end - start) / 2;
+             long mid = start + (end - start) / 2;
             ClusterDistanceTask left  = new ClusterDistanceTask(c1, c2, d, start, mid);
             ClusterDistanceTask right = new ClusterDistanceTask(c1, c2, d, mid, end);
             left.fork();

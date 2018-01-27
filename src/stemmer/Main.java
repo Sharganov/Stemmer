@@ -29,7 +29,7 @@ public class Main {
     private static final String DN_DATA = "graph_data";
 
 
-    
+
     private static void makeExperimentOutputDirs(String propertiesFilePath, String experimentName) {
         String experimentPath = D_OUTPUTS +"/" +experimentName+"/";
         String dictPath = experimentPath + DN_STEMMED_DICT;

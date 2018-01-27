@@ -6,9 +6,7 @@ import stemmer.yass.DistanceMeasure;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Classe che rappresenta un Cluster di parole (stringhe)
- * */
+
 public class Cluster {
 
     static Cluster merge(int id, Cluster c1, Cluster c2) {
@@ -21,11 +19,7 @@ public class Cluster {
     private List<String> words;
     private String longestPrefix;
 
-    /**
-     * Costruisce un nuovo cluster utilizzando le parole presenti in {@code words}.
-     * @param id identificativo del nuovo cluster.
-     * @param words parole da inserire nel nuovo cluster.
-     * */
+
     Cluster(int id, List<String> words) {
         this.id = id;
         this.words = words;
@@ -41,7 +35,7 @@ public class Cluster {
                 shortestWord = w;
             }
         }
-        /* Ricerca del più lungo prefisso in comune tra le parole del cluster. */
+
         this.longestPrefix = "";
         for (int i = 0; i < shortestWord.length(); i++){
             Character c = shortestWord.charAt(i);

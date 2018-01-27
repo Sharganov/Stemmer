@@ -45,10 +45,7 @@ public class FindMinDistancePairTask extends RecursiveTask<List<MinDistancePair>
                     minDist = distances.get(k);
                     int r = manager._i(k);
                     int s = manager._j(k);
-                    // Devo stare attento all'ordine in cui cancello i dati
-                    // perché dopo che ho tolto un elemento l'indice dell'altro cambia.
-                    // assum0 che r sia l'indice minore
-                    if (s < r) {
+                     if (s < r) {
                         int t = r;
                         r = s;
                         s = t;
@@ -56,14 +53,11 @@ public class FindMinDistancePairTask extends RecursiveTask<List<MinDistancePair>
 
                     minDistancePairs.add(new MinDistancePair(r,s, minDist));
                 } else if (distances.get(k) == minDist) {
-                    // Aggiungo la coppia alla lista
+
                     minDist = distances.get(k);
                     int r = manager._i(k);
                     int s = manager._j(k);
-                    // Devo stare attento all'ordine in cui cancello i dati
-                    // perché dopo che ho tolto un elemento l'indice dell'altro cambia.
-                    // assum0 che r sia l'indice minore
-                    if (s < r) {
+                     if (s < r) {
                         int t = r;
                         r = s;
                         s = t;
@@ -74,18 +68,14 @@ public class FindMinDistancePairTask extends RecursiveTask<List<MinDistancePair>
             }
             return minDistancePairs;
         } else {
-            // Troppo lavoro, lo divido!
             long mid = start + (end - start) / 2;
             FindMinDistancePairTask left  = new FindMinDistancePairTask(manager, start, mid);
             FindMinDistancePairTask right = new FindMinDistancePairTask(manager, mid, end);
             left.fork();
-
-            // Il job ora ritorna la lista di coppie che sono alla stessa distanza minima
             List<MinDistancePair> rightAns = right.compute();
             List<MinDistancePair> leftAns  = left.join();
 
             if (leftAns.get(0).getDist() == rightAns.get(0).getDist()) {
-                // Ci sono minimi uguali, ritorno la concatenazione
                 leftAns.addAll(rightAns);
                 return leftAns;
             } else if (leftAns.get(0).compareTo(rightAns.get(0)) == -1) {

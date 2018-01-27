@@ -11,14 +11,7 @@ public class MergeHistoryRecord implements Comparable{
     private float dist;
     private int cnt;
 
-    /**
-     * Costruisce un nuovo record.
-     * @param c1 id del primo cluster mergiato.
-     * @param c2 id del secondo cluster mergiato.
-     * @param dist distanza dei due cluster.
-     * @param cnt numero di cluster rimanenti dopo l'operazione di merge.
-     * */
-    public MergeHistoryRecord(int c1, int c2, int cres, float dist, int cnt) {
+   public MergeHistoryRecord(int c1, int c2, int cres, float dist, int cnt) {
         this.c1 = c1;
         this.c2 = c2;
         this.cres = cres;

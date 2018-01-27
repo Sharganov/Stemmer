@@ -4,9 +4,6 @@ package stemmer.clustering;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Classe che implementa una stuttura dati simile ad un array di float ma che può contenere più di 2^31-1 elementi.
- * */
 class MyCustomBigArray {
 
     //private static final int ARRAY_SIZE = 10;
@@ -67,7 +64,6 @@ class MyCustomBigArray {
     }
 
     void resize(long newSize) {
-        // Se ci sono degli array extra li butta via
         int newArraysCount = (int)Math.ceil(newSize / (double)ARRAY_SIZE);
         if (newArraysCount < arraysCount) {
             arrays = arrays.subList(0, newArraysCount);
