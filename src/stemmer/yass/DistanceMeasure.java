@@ -1,4 +1,4 @@
-package bm.yass;
+package stemmer.yass;
 
 /**
  * Interfaccia per le distanze del paper YASS

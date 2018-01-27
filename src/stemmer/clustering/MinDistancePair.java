@@ -1,4 +1,4 @@
-package bm.clustering;
+package stemmer.clustering;
 
 public class MinDistancePair {
 

@@ -1,4 +1,4 @@
-package bm.clustering;
+package stemmer.clustering;
 
 import java.util.*;
 

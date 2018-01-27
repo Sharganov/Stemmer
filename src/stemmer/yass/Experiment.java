@@ -1,4 +1,4 @@
-package bm.yass;
+package stemmer.yass;
 
 import java.io.FileInputStream;
 import java.io.InputStream;

@@ -1,6 +1,6 @@
-package bm.clustering;
+package stemmer.clustering;
 
-import bm.yass.DistanceMeasure;
+import stemmer.yass.DistanceMeasure;
 
 import java.util.List;
 import java.util.concurrent.RecursiveTask;

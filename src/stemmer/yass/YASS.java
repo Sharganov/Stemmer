@@ -1,7 +1,7 @@
-package bm.yass;
+package stemmer.yass;
 
-import bm.clustering.Cluster;
-import bm.clustering.ClusterSet;
+import stemmer.clustering.Cluster;
+import stemmer.clustering.ClusterSet;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package bm.yass;
+package stemmer.yass;
 
 /**
  * Classe che implementa le varie distanze definite nel paper YASS.

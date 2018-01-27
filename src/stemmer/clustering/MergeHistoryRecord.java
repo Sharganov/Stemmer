@@ -1,4 +1,4 @@
-package bm.clustering;
+package stemmer.clustering;
 
 /**
  * Classe che descrive un operazione di merge effettuata dall'algoritmo di clustering.
