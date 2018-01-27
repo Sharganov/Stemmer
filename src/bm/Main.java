@@ -16,14 +16,6 @@ import java.util.*;
 
 public class Main {
 
-    // Possibili moduli per la pipeline
-    private static final String PIPE_CLUSTERING = "clustering";
-    private static final String PIPE_SAVE_GRAPH_DATA = "save_graph_data";
-    private static final String PIPE_SAVE_HISTORY = "save_history";
-    private static final String PIPE_LOAD_HISTORY = "load_history";
-    private static final String PIPE_MERGE_HISTORY = "merge_history";
-    private static final String PIPE_YASS_STEMMING = "YASS_stemming";
-    //Nomi delle directory
     private static final String D_OUTPUTS = "outputs";
     private static final String DN_STEMMED_DICT = "stemmed_dict";
     private static final String DN_HISTORIES = "histories";
@@ -51,67 +43,6 @@ public class Main {
         }
     }
 
-    private static void saveGraphData(String expName, String distanceName, List<MergeHistoryRecord> mergeHistory) {
-        System.out.println("Salvo i dati per la distanza "+ distanceName+"...");
-        String filePath = D_OUTPUTS + "/"+expName+"/"+DN_DATA+"/data_"+distanceName+".csv";
-
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(filePath), "utf-8"))) {
-            writer.write("distance;cluster\n");
-            for (MergeHistoryRecord m : mergeHistory){
-                writer.write(m.getDist()+";"+m.getCnt()+"\n");
-            }
-        } catch (Exception e){
-            System.err.println(e.getMessage());
-        }
-    }
-
-    private static void saveMergeHistory(String expName, String distanceName, List<MergeHistoryRecord> mergeHistory){
-        System.out.println("Salvo i merge history per la distanza "+ distanceName+"...");
-        String filePath = D_OUTPUTS + "/"+expName+"/"+DN_HISTORIES+"/merge_history_"+distanceName+".mh";
-
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(filePath), "utf-8"))) {
-            //  f.write("%s,%s,%s,%s\n" % (str(m.c1), str(m.c2), str(m.dist), str(m.cnt)))
-            for (MergeHistoryRecord m : mergeHistory){
-                writer.write(m.getC1()+ "," + m.getC2()+","+m.getCres() +","+m.getDist()+","+m.getCnt()+"\n");
-            }
-        } catch (Exception e){
-            System.err.println(e.getMessage());
-        }
-
-    }
-
-    private static List<MergeHistoryRecord> loadMergeHistory(String expName, String distanceName) {
-        System.out.println("Carico il merge history per la distanza "+distanceName+"...");
-        List<MergeHistoryRecord> history = new ArrayList<>();
-
-        String filePath = D_OUTPUTS + "/"+expName+"/"+DN_HISTORIES+"/merge_history_"+distanceName+".mh";
-        try {
-            File fileDir = new File(filePath);
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(
-                            new FileInputStream(fileDir), "UTF8"));
-            String line;
-            while ((line = in.readLine()) != null) {
-                if (line.equals("")) continue;
-                String[] parts = line.split(",");
-                history.add(new MergeHistoryRecord(
-                        Integer.parseInt(parts[0]),
-                        Integer.parseInt(parts[1]),
-                        Integer.parseInt(parts[2]),
-                        Float.parseFloat(parts[3]),
-                        Integer.parseInt(parts[4])
-                ));
-            }
-            in.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        return history;
-    }
-
     private static void saveStemmedDict(String expName, Map<String, String> dictionary, String distanceName, float threshold) {
         Object[] keys = dictionary.keySet().toArray();
         Arrays.sort(keys);
@@ -134,23 +65,14 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        if (args.length != 2){
-            System.out.println("---------------------");
-            System.out.println("        YASS         ");
-            System.out.println("---------------------");
-            System.out.println("Per eseguire lo script è necessario fornire la descrizione di un esperimento");
-            System.out.println("specificandola con il flag --file (-f)");
-            System.out.println("");
-            System.out.println("$ java -jar java-IR.jar -f <experiment_file_path>");
-            return;
-        }
+
         int cores = Runtime.getRuntime().availableProcessors();
         System.out.println("Number of cores available: "+cores);
 
         String propertiesFilePath = args[1];
         System.out.println("Loading experiment from: "+ propertiesFilePath);
 
-        // Carico il file con le proprietà
+        // load algotithms settings
         Experiment exp = Experiment.loadFromFile(propertiesFilePath);
 
         makeExperimentOutputDirs(propertiesFilePath, exp.getName());
@@ -174,11 +96,14 @@ public class Main {
         }
 
         long startTime = System.currentTimeMillis();
+
         // Load lexicon
         System.out.println("Load lexicon...");
+
         List<String> lexicon = new ArrayList<>();
         int discardedNumbers = 0;
         int discardedStopwords = 0;
+
         try {
             File fileDir = new File(exp.getLexiconPath());
             BufferedReader in = new BufferedReader(
@@ -211,52 +136,27 @@ public class Main {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
-        System.out.println("Loaded lexicon of "+lexicon.size() + "terms. Time passed: " + (System.currentTimeMillis() - startTime)/1000 + " s");
-        System.out.println("Discarded "+discardedNumbers + "numbers e"+discardedStopwords +" stopwords");
+        System.out.println("Loaded lexicon of " + lexicon.size() + "terms. Time passed: " + (System.currentTimeMillis() - startTime)/1000 + " s");
+        System.out.println("Discarded " + discardedNumbers + "numbers " + discardedStopwords +" stopwords");
 
-        //I reduce the lexicon
+        //reduce the lexicon
         if (exp.getLexiconRangeStart() != -1 && exp.getLexiconRangeEnd() != -1) {
             lexicon = lexicon.subList(exp.getLexiconRangeStart(), exp.getLexiconRangeEnd());
         }
 
         List<MergeHistoryRecord> mergeHistory = new ArrayList<>();
-        if (exp.getPipeline().contains(PIPE_CLUSTERING)) {
-            System.out.println("perform the clustering algorithm with the measurement" + exp.getDistanceMeasure().getName());
 
-            if (exp.isSplitAllowed()){
-                mergeHistory = HierarchicalClustering.calculateClustersSplitting(exp.getDistanceMeasure(), lexicon);
-            } else {
-                mergeHistory = HierarchicalClustering.calculateClusters(exp.getDistanceMeasure(), lexicon);
-            }
+        System.out.println("perform the clustering algorithm with the measurement" + exp.getDistanceMeasure().getName());
 
-            System.out.println("Completed clustering! Time passed: " + (System.currentTimeMillis() - startTime)/1000);
+        mergeHistory = HierarchicalClustering.calculateClusters(exp.getDistanceMeasure(), lexicon);
 
-//            if (exp.getPipeline().contains(PIPE_SAVE_GRAPH_DATA)) {
-//                System.out.println("Except for the data for the graph");
-//                saveGraphData(exp.getName(), exp.getDistanceMeasure().getName(), mergeHistory);
-//            }
-//
-//            if (exp.getPipeline().contains(PIPE_SAVE_HISTORY)) {
-//                System.out.println("Except for the historic merge ...");
-//                saveMergeHistory(exp.getName(), exp.getDistanceMeasure().getName(), mergeHistory);
-//            }
-        }
+        System.out.println("Completed clustering! Time passed: " + (System.currentTimeMillis() - startTime)/1000);
 
-//        if (exp.getPipeline().contains(PIPE_LOAD_HISTORY)){
-//            System.out.println("Carico lo storico dei merge...");
-//            mergeHistory = loadMergeHistory(exp.getName(), exp.getDistanceMeasure().getName());
-//        }
+        List<ClusterSet> snapshots = HistoryClusterBuilder.buildSetsFromHistory(lexicon, mergeHistory, exp.getThresholds());
 
-        if (exp.getPipeline().contains(PIPE_MERGE_HISTORY)) {
-            System.out.println("Loading the historian of the merge ...");
-            List<ClusterSet> snapshots = HistoryClusterBuilder.buildSetsFromHistory(lexicon, mergeHistory, exp.getThresholds());
-
-            if (exp.getPipeline().contains(PIPE_YASS_STEMMING)) {
-                for (ClusterSet cs : snapshots) {
-                    Map<String, String> stemmedDict = YASS.stemFromClusterSet(cs);
-                    saveStemmedDict(exp.getName(), stemmedDict, exp.getDistanceMeasure().getName(), cs.getThreshold());
-                }
-            }
+        for (ClusterSet cs : snapshots) {
+            Map<String, String> stemmedDict = YASS.stemFromClusterSet(cs);
+            saveStemmedDict(exp.getName(), stemmedDict, exp.getDistanceMeasure().getName(), cs.getThreshold());
         }
 
         System.out.println("Completion completed. Total duration: " + (System.currentTimeMillis() - startTime)/1000 + " s");

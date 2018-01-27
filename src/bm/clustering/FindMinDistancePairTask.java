@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.RecursiveTask;
 
 /**
- * Classe che implementa il la ricerca parallela delle coppie a distanza minima, secondo una strategia divide-et-impera
+ * Class that implements the parallel search of the minimum distance pairs, according to a divide-and-rule strategy
  * */
 public class FindMinDistancePairTask extends RecursiveTask<List<MinDistancePair>>{
     private static long SEQUENTIAL_THRESHOLD = 100000;

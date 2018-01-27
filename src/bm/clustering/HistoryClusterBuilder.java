@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Classe che costruisce ricostruisce vari insiemi di clusters a partire da uno storico delle operazioni
- * di merge dell'algoritmo di clustering gerarchico.
+ * Construct class reconstructs various sets of clusters from an operation history
+ * merge of the hierarchical clustering algorithm.
  * */
 public class HistoryClusterBuilder {
 
@@ -30,7 +30,7 @@ public class HistoryClusterBuilder {
 
         ClusterSet clusterSet = new ClusterSet(0);
 
-        // Ricostruisce lo stato inziale dell'algoritmo di clustering
+        // Reconstructs the initial status of the clustering algorithm
         for (int i = 0; i < words.size(); i++) {
             List<String> cw = new ArrayList<>();
             cw.add(words.get(i));
@@ -38,7 +38,7 @@ public class HistoryClusterBuilder {
         }
         int nextId = words.size();
 
-        // Ordina i thresholds in ordine crescente
+        // Sort the thresholds in ascending order
         Arrays.sort(thresholds);
         int cntThreshold = 0;
 

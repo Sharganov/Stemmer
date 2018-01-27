@@ -11,15 +11,6 @@ import java.util.List;
  * */
 public class Cluster {
 
-    /**
-     * Esegue il merge di due cluster, creando un nuovo cluster con l'{@code id} ricervuto come parametro.
-     * Il nuovo cluster viene creato aggiungendo alla lista di {@code c1} le parole presenti su {@code c2}.
-     *
-     *  @param id identificativo del nuovo cluster.
-     *  @param c1 primo cluster da mergiare.
-     *  @param c2 secondo cluster da mergiare.
-     *  @return il nuovo cluster ottenuto mergiando i due cluster ricevuti come parametro.
-     * */
     static Cluster merge(int id, Cluster c1, Cluster c2) {
         List<String> newWords = (ArrayList<String>)((ArrayList<String>)c1.words).clone();
         newWords.addAll(c2.words);
@@ -69,18 +60,10 @@ public class Cluster {
         }
     }
 
-    /**
-     * Calcola la distanza, secondo complete linkagem con il cluster {@code nextCluster} utilizzando la
-     * misura di distanza {@code d}.
-     * Se i cluster contengono molte parole, il calcolo della distanza viene effettuato in parallelo.
-     * @param nextCluster cluster con cui calcolare la distanza.
-     * @param d misura di distanza da utilizzare.
-     * @return distanza dei due cluster
-     * */
+
     float distance(Cluster nextCluster, DistanceMeasure d) {
         if (this.words.size() == 1 && nextCluster.words.size() == 1) {
-            // Così evito di scomodare il parallelismo mentre calcolo la
-            // matrice delle distanze
+
             return d.calculate(this.words.get(0), nextCluster.words.get(0));
         } else if (this.words.size() * nextCluster.words.size() < 5000){
             float maxDist = 0;
@@ -94,15 +77,11 @@ public class Cluster {
             }
             return maxDist;
         } else{
-            // Calcolo parallelo
             return ClusterDistanceTask.calculateClusterDistance(this, nextCluster, d);
         }
     }
 
-    /**
-     * Ritorna la parola centrale del cluster, ovvero il massimo prefisso comune tra tutte le parole presenti.
-     * @return parola centrale del cluster.
-     * */
+
     public String getCentralWord(){
         return this.longestPrefix;
     }
